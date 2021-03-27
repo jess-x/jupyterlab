@@ -60,6 +60,8 @@ namespace CommandIDs {
 
   export const newUntitled = 'docmanager:new-untitled';
 
+  export const newUntitledRename = 'docmanager:new-untitled-rename';
+
   export const open = 'docmanager:open';
 
   export const openBrowserTab = 'docmanager:open-browser-tab';
@@ -792,6 +794,14 @@ function addLabCommands(
         const context = docManager.contextForWidget(contextMenuWidget()!);
         return renameDialog(docManager, context!.path);
       }
+    }
+  });
+
+  commands.addCommand(CommandIDs.newUntitledRename, {
+    execute: args => {
+      return commands.execute('docmanager:new-untitled', args).then(model => {
+        return renameDialog(docManager, model.path);
+      });
     }
   });
 
