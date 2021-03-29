@@ -81,6 +81,45 @@ export function renameDialog(
 }
 
 /**
+ * Rename a file after notebook launch with a dialog.
+ */
+export function launchRenameDialog(
+  manager: IDocumentManager,
+  oldPath: string,
+  translator?: ITranslator
+): Promise<Contents.IModel | null> {
+  translator = translator || nullTranslator;
+  const trans = translator.load('jupyterlab');
+
+  return showDialog({
+    title: trans.__('Name Notebook File'),
+    body: new RenameHandler(oldPath),
+    focusNodeSelector: 'input',
+    buttons: [Dialog.okButton({ label: trans.__('Enter') })]
+  }).then(result => {
+    if (!result.value) {
+      return null;
+    }
+
+    if (!isValidFileName(result.value)) {
+      void showErrorMessage(
+        trans.__('Naming Error'),
+        Error(
+          trans.__(
+            '"%1" is not a valid name for a file. Names must have nonzero length, and cannot include "/", "\\", or ":"',
+            result.value
+          )
+        )
+      );
+      return null;
+    }
+    const basePath = PathExt.dirname(oldPath);
+    const newPath = PathExt.join(basePath, result.value);
+    return renameFile(manager, oldPath, newPath);
+  });
+}
+
+/**
  * Rename a file, asking for confirmation if it is overwriting another.
  */
 export function renameFile(

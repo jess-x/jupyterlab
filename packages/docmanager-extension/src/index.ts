@@ -23,6 +23,7 @@ import {
 import { IChangedArgs, Time } from '@jupyterlab/coreutils';
 
 import {
+  launchRenameDialog,
   renameDialog,
   DocumentManager,
   IDocumentManager,
@@ -800,7 +801,7 @@ function addLabCommands(
   commands.addCommand(CommandIDs.newUntitledRename, {
     execute: args => {
       return commands.execute('docmanager:new-untitled', args).then(model => {
-        return renameDialog(docManager, model.path);
+        return launchRenameDialog(docManager, model.path);
       });
     }
   });
