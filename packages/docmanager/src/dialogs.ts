@@ -93,7 +93,7 @@ export function launchRenameDialog(
 
   return showDialog({
     title: trans.__('Name Notebook File'),
-    body: new RenameHandler(oldPath),
+    body: new LaunchRenameHandler(oldPath),
     focusNodeSelector: 'input',
     buttons: [Dialog.okButton({ label: trans.__('Enter') })]
   }).then(result => {
@@ -232,6 +232,79 @@ namespace Private {
     body.appendChild(existingPath);
     body.appendChild(nameTitle);
     body.appendChild(name);
+    return body;
+  }
+}
+
+/**
+ * A widget used to rename notebook file upon launch.
+ */
+class LaunchRenameHandler extends Widget {
+  /**
+   * Construct a new "name notebook file" dialog.
+   */
+  constructor(oldPath: string) {
+    super({ node: Private.createLaunchRenameNode() });
+    this.addClass(FILE_DIALOG_CLASS);
+    const ext = PathExt.extname(oldPath);
+    const value = (this.inputNode.value = PathExt.basename(oldPath));
+    this.inputNode.setSelectionRange(0, value.length - ext.length);
+    // this.checkboxNode.
+  }
+
+  /**
+   * Get the input text node.
+   */
+  get inputNode(): HTMLInputElement {
+    return this.node.getElementsByTagName('input')[0] as HTMLInputElement;
+  }
+
+  /**
+   * Get the value of the input widget.
+   */
+  getValue(): string {
+    return this.inputNode.value;
+  }
+
+  /**
+   * Get the checkbox node.
+   */
+  get checkboxNode(): HTMLInputElement {
+    return this.node.getElementsByTagName('checkbox')[0] as HTMLInputElement;
+  }
+
+  /**
+   * Get checked of the checkbox widget.
+   */
+  getChecked(): boolean {
+    return this.checkboxNode.checked;
+  }
+}
+
+/**
+ * A namespace for private data.
+ */
+namespace Private {
+  /**
+   * Create the node for a launch rename handler.
+   */
+  export function createLaunchRenameNode(
+    translator?: ITranslator
+  ): HTMLElement {
+    translator = translator || nullTranslator;
+    // const trans = translator.load('jupyterlab');
+    const body = document.createElement('div');
+    const name = document.createElement('input');
+    const checkbox = document.createElement('input');
+    const label = document.createElement('label');
+
+    checkbox.type = 'checkbox';
+    label.textContent = "Don't ask me again";
+    body.appendChild(name);
+    body.appendChild(checkbox);
+    body.appendChild(label);
+    console.log(label);
+
     return body;
   }
 }
