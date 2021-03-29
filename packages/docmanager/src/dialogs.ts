@@ -98,7 +98,7 @@ export function launchRenameDialog(
     buttons: [Dialog.okButton({ label: trans.__('Enter') })]
   }).then(result => {
     if (!result.value) {
-      return null;
+      return renameFile(manager, oldPath, oldPath);
     }
 
     if (!isValidFileName(result.value)) {
@@ -111,7 +111,7 @@ export function launchRenameDialog(
           )
         )
       );
-      return null;
+      return renameFile(manager, oldPath, oldPath);
     }
     const basePath = PathExt.dirname(oldPath);
     const newPath = PathExt.join(basePath, result.value);
