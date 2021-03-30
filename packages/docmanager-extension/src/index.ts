@@ -16,6 +16,7 @@ import {
   showDialog,
   showErrorMessage,
   Dialog,
+  // InputDialog,
   ICommandPalette,
   ISessionContextDialogs
 } from '@jupyterlab/apputils';
@@ -84,6 +85,9 @@ namespace CommandIDs {
   export const download = 'docmanager:download';
 
   export const toggleAutosave = 'docmanager:toggle-autosave';
+
+  export const toggleNameNotebookFileOnLaunch =
+    'docmanager:toggle-name-notebook-file-on-launch';
 
   export const showInFileBrowser = 'docmanager:show-in-file-browser';
 }
@@ -179,10 +183,22 @@ const docManagerPlugin: JupyterFrontEndPlugin<IDocumentManager> = {
         | null;
       docManager.autosaveInterval = autosaveInterval || 120;
 
+      // Handle whether to prompt to name notebook file upon launch
+      const nameNotebookFileOnLaunch = settings.get('nameNotebookFileOnLaunch')
+        .composite as boolean | null;
+      docManager.nameNotebookFileOnLaunch =
+        nameNotebookFileOnLaunch === true || nameNotebookFileOnLaunch === false
+          ? nameNotebookFileOnLaunch
+          : true;
+      app.commands.notifyCommandChanged(
+        CommandIDs.toggleNameNotebookFileOnLaunch
+      );
+
       // Handle default widget factory overrides.
       const defaultViewers = settings.get('defaultViewers').composite as {
         [ft: string]: string;
       };
+
       const overrides: { [ft: string]: string } = {};
       // Filter the defaultViewers and file types for existing ones.
       Object.keys(defaultViewers).forEach(ft => {
@@ -706,6 +722,20 @@ function addCommands(
     }
   });
 
+  commands.addCommand(CommandIDs.toggleNameNotebookFileOnLaunch, {
+    label: trans.__('Name Notebook on Launch'),
+    isToggled: () => docManager.nameNotebookFileOnLaunch,
+    execute: () => {
+      const value = !docManager.nameNotebookFileOnLaunch;
+      const key = 'nameNotebookFileOnLaunch';
+      return settingRegistry
+        .set(pluginId, key, value)
+        .catch((reason: Error) => {
+          console.error(`Failed to set ${pluginId}:${key} - ${reason.message}`);
+        });
+    }
+  });
+
   // .jp-mod-current added so that the console-creation command is only shown
   // on the current document.
   // Otherwise it will delegate to the wrong widget.
@@ -722,14 +752,21 @@ function addCommands(
       CommandIDs.save,
       CommandIDs.saveAs,
       CommandIDs.download,
-      CommandIDs.toggleAutosave
+      CommandIDs.toggleAutosave,
+      CommandIDs.toggleNameNotebookFileOnLaunch
     ].forEach(command => {
       palette.addItem({ command, category });
     });
   }
 
   if (mainMenu) {
-    mainMenu.settingsMenu.addGroup([{ command: CommandIDs.toggleAutosave }], 5);
+    mainMenu.settingsMenu.addGroup(
+      [
+        { command: CommandIDs.toggleAutosave },
+        { command: CommandIDs.toggleNameNotebookFileOnLaunch }
+      ],
+      5
+    );
     mainMenu.fileMenu.addGroup([{ command: CommandIDs.download }], 6);
   }
 }
@@ -800,9 +837,12 @@ function addLabCommands(
 
   commands.addCommand(CommandIDs.newUntitledRename, {
     execute: args => {
-      return commands.execute('docmanager:new-untitled', args).then(model => {
-        return launchRenameDialog(docManager, model.path);
-      });
+      if (docManager.nameNotebookFileOnLaunch) {
+        return commands.execute('docmanager:new-untitled', args).then(model => {
+          return launchRenameDialog(docManager, model.path);
+        });
+      }
+      return commands.execute('docmanager:new-untitled', args);
     }
   });
 

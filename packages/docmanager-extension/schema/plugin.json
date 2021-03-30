@@ -38,6 +38,12 @@
       "additionalProperties": {
         "type": "string"
       }
+    },
+    "nameNotebookFileOnLaunch": {
+      "type": "boolean",
+      "title": "Name Notebook on Launch",
+      "description": "Whether to prompt to name notebook file upon launch",
+      "default": true
     }
   },
   "additionalProperties": false,

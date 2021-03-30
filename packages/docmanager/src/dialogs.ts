@@ -93,7 +93,7 @@ export function launchRenameDialog(
 
   return showDialog({
     title: trans.__('Name Notebook File'),
-    body: new LaunchRenameHandler(oldPath),
+    body: new LaunchRenameHandler(manager, oldPath),
     focusNodeSelector: 'input',
     buttons: [Dialog.okButton({ label: trans.__('Enter') })]
   }).then(result => {
@@ -243,13 +243,17 @@ class LaunchRenameHandler extends Widget {
   /**
    * Construct a new "name notebook file" dialog.
    */
-  constructor(oldPath: string) {
-    super({ node: Private.createLaunchRenameNode() });
+  constructor(manager: IDocumentManager, oldPath: string) {
+    super({ node: Private.createLaunchRenameNode(manager) });
     this.addClass(FILE_DIALOG_CLASS);
     const ext = PathExt.extname(oldPath);
     const value = (this.inputNode.value = PathExt.basename(oldPath));
     this.inputNode.setSelectionRange(0, value.length - ext.length);
-    // this.checkboxNode.
+    // console.log(this.checkboxNode);
+    // console.log(this.inputNode);
+    // console.log("see what i have access!!!");
+    // console.log(this);
+    // console.log(this.parent);
   }
 
   /**
@@ -270,7 +274,7 @@ class LaunchRenameHandler extends Widget {
    * Get the checkbox node.
    */
   get checkboxNode(): HTMLInputElement {
-    return this.node.getElementsByTagName('checkbox')[0] as HTMLInputElement;
+    return this.node.getElementsByTagName('input')[1] as HTMLInputElement;
   }
 
   /**
@@ -286,24 +290,28 @@ class LaunchRenameHandler extends Widget {
  */
 namespace Private {
   /**
-   * Create the node for a launch rename handler.
+   * Create the node for a rename after launch handler.
    */
   export function createLaunchRenameNode(
+    manger: IDocumentManager,
     translator?: ITranslator
   ): HTMLElement {
     translator = translator || nullTranslator;
-    // const trans = translator.load('jupyterlab');
+    const trans = translator.load('jupyterlab');
     const body = document.createElement('div');
     const name = document.createElement('input');
     const checkbox = document.createElement('input');
     const label = document.createElement('label');
 
     checkbox.type = 'checkbox';
-    label.textContent = "Don't ask me again";
+    checkbox.addEventListener('change', function () {
+      manger.nameNotebookFileOnLaunch = !this.checked;
+    });
+    // Question: how to aglin two elements side by side
+    label.textContent = trans.__("Don't ask me again");
     body.appendChild(name);
     body.appendChild(checkbox);
     body.appendChild(label);
-    console.log(label);
 
     return body;
   }
