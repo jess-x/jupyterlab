@@ -16,7 +16,6 @@ import {
   showDialog,
   showErrorMessage,
   Dialog,
-  // InputDialog,
   ICommandPalette,
   ISessionContextDialogs
 } from '@jupyterlab/apputils';

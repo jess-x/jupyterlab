@@ -249,11 +249,6 @@ class LaunchRenameHandler extends Widget {
     const ext = PathExt.extname(oldPath);
     const value = (this.inputNode.value = PathExt.basename(oldPath));
     this.inputNode.setSelectionRange(0, value.length - ext.length);
-    // console.log(this.checkboxNode);
-    // console.log(this.inputNode);
-    // console.log("see what i have access!!!");
-    // console.log(this);
-    // console.log(this.parent);
   }
 
   /**
@@ -307,7 +302,7 @@ namespace Private {
     checkbox.addEventListener('change', function () {
       manger.nameNotebookFileOnLaunch = !this.checked;
     });
-    // Question: how to aglin two elements side by side
+    // Question: aglin two elements (flexbox?)
     label.textContent = trans.__("Don't ask me again");
     body.appendChild(name);
     body.appendChild(checkbox);
