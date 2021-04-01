@@ -417,7 +417,11 @@ export class DocumentManager implements IDocumentManager {
    * a file.
    */
   rename(oldPath: string, newPath: string): Promise<Contents.IModel> {
-    return this.services.contents.rename(oldPath, newPath);
+    return this.services.contents.rename(oldPath, newPath).then(model => {
+      if (model.type == 'notebook') {
+        model.renamed = true;
+      }
+    }) as Promise<Contents.IModel>;
   }
 
   /**

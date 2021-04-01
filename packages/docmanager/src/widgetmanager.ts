@@ -373,10 +373,20 @@ export class DocumentWidgetManager implements IDisposable {
       return Promise.resolve([true, true]);
     }
     const model = context.model;
+    const contentsmodel = context.contentsModel;
+    const fileName = widget.title.label;
+
+    if (
+      contentsmodel &&
+      contentsmodel.type == 'notebook' &&
+      contentsmodel.renamed === undefined &&
+      fileName.startsWith('Untitled')
+    ) {
+      console.log('prompt to rename');
+    }
     if (!model.dirty || widgets.length > 1 || factory.readOnly) {
       return Promise.resolve([true, true]);
     }
-    const fileName = widget.title.label;
     const saveLabel = context.contentsModel?.writable
       ? trans.__('Save')
       : trans.__('Save as');
