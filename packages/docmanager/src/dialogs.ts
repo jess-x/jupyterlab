@@ -86,6 +86,7 @@ export function renameDialog(
 export function launchRenameDialog(
   manager: IDocumentManager,
   oldPath: string,
+  date: string,
   translator?: ITranslator
 ): Promise<Contents.IModel | null> {
   translator = translator || nullTranslator;
@@ -93,12 +94,15 @@ export function launchRenameDialog(
 
   return showDialog({
     title: trans.__('Name Notebook File'),
-    body: new LaunchRenameHandler(manager, oldPath),
+    body: new LaunchRenameHandler(manager, oldPath, date),
     focusNodeSelector: 'input',
     buttons: [Dialog.okButton({ label: trans.__('Enter') })]
   }).then(result => {
+    const basePath = PathExt.dirname(oldPath);
+    const ext = PathExt.extname(oldPath);
+    let newPath = PathExt.join(basePath, date + ext);
     if (!result.value) {
-      return renameFile(manager, oldPath, oldPath);
+      return renameFile(manager, oldPath, newPath);
     }
 
     if (!isValidFileName(result.value)) {
@@ -113,8 +117,7 @@ export function launchRenameDialog(
       );
       return renameFile(manager, oldPath, oldPath);
     }
-    const basePath = PathExt.dirname(oldPath);
-    const newPath = PathExt.join(basePath, result.value);
+    newPath = PathExt.join(basePath, result.value);
     return renameFile(manager, oldPath, newPath);
   });
 }
@@ -243,11 +246,17 @@ class LaunchRenameHandler extends Widget {
   /**
    * Construct a new "name notebook file" dialog.
    */
-  constructor(manager: IDocumentManager, oldPath: string) {
+  constructor(manager: IDocumentManager, oldPath: string, date: string) {
     super({ node: Private.createLaunchRenameNode(manager) });
     this.addClass(FILE_DIALOG_CLASS);
     const ext = PathExt.extname(oldPath);
-    const value = (this.inputNode.value = PathExt.basename(oldPath));
+    console.log(ext);
+    const value = (this.inputNode.value = date + ext);
+    // console.log(value);
+
+    // PathExt.join(ext, date);
+
+    // value =
     this.inputNode.setSelectionRange(0, value.length - ext.length);
   }
 

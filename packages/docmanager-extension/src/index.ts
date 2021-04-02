@@ -838,7 +838,11 @@ function addLabCommands(
     execute: args => {
       if (docManager.nameNotebookFileOnLaunch) {
         return commands.execute('docmanager:new-untitled', args).then(model => {
-          return launchRenameDialog(docManager, model.path);
+          // const path_default = model
+          const date = model.created.slice(5, 10);
+          console.log(model);
+
+          return launchRenameDialog(docManager, model.path, date);
         });
       }
       return commands.execute('docmanager:new-untitled', args);
