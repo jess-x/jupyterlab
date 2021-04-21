@@ -56,6 +56,16 @@ interface IState {}
  */
 class TOCTree extends React.Component<IProperties, IState> {
   /**
+   * Returns a component which renders a table of contents tree.
+   *
+   * @param props - component properties
+   * @returns component
+   */
+   constructor(props: IProperties) {
+    super(props);
+  }
+
+  /**
    * Renders a table of contents tree.
    */
   render() {
@@ -77,7 +87,7 @@ class TOCTree extends React.Component<IProperties, IState> {
       <div className="jp-TableOfContents">
         <div className="jp-stack-panel-header">{this.props.title}</div>
         {Toolbar && <Toolbar />}
-        <ul className="jp-TableOfContents-content">{list}</ul>
+        <li className="jp-TableOfContents-content">{list}</li>
       </div>
     );
   }
