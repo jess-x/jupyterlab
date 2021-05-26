@@ -52,7 +52,7 @@ export class Breakpoints extends PanelWithToolbar {
         tooltip: this.trans.__('Remove All Breakpoints')
       })
     );
-
+    
     this.addWidget(body);
     this.addClass('jp-DebuggerBreakpoints');
   }

@@ -125,6 +125,11 @@ export namespace Callstack {
      * The evaluate command ID.
      */
     evaluate: string;
+
+    /**
+     * The puse command ID.
+     */
+    pause: string;
   }
 
   /**

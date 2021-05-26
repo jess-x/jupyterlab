@@ -19,7 +19,8 @@ import {
   stepOutIcon as stepOut,
   stepOverIcon as stepOver,
   variableIcon as variable,
-  viewBreakpointIcon as viewBreakpoint
+  viewBreakpointIcon as viewBreakpoint,
+  pauseOnExceptionsIcon as pauseOnExceptions
 } from './icons';
 
 import { DebuggerModel } from './model';
@@ -117,7 +118,11 @@ export namespace Debugger {
 
     export const evaluate = 'debugger:evaluate';
 
+<<<<<<< HEAD
     export const restartDebug = 'debugger:restart-debug';
+=======
+    export const pause = 'debugger:pause';
+>>>>>>> b72f524e14... Add pause on exceptions to debugger
   }
 
   /**
@@ -133,6 +138,7 @@ export namespace Debugger {
     export const terminateIcon = stopIcon;
     export const variableIcon = variable;
     export const viewBreakpointIcon = viewBreakpoint;
+    export const pauseOnExceptionsIcon = pauseOnExceptions;
   }
 
   /**
