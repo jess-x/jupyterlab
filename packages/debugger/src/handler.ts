@@ -11,6 +11,8 @@ import { NotebookPanel } from '@jupyterlab/notebook';
 import { Kernel, KernelMessage, Session } from '@jupyterlab/services';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { bugDotIcon, bugIcon, ToolbarButton } from '@jupyterlab/ui-components';
+import { MainAreaWidget } from '@jupyterlab/apputils';
+import { Widget } from '@lumino/widgets';
 import { Debugger } from './debugger';
 import { ConsoleHandler } from './handlers/console';
 import { FileHandler } from './handlers/file';
@@ -74,6 +76,26 @@ function updateIconButtonState(
     if (onClick) {
       widget.onClick = onClick;
     }
+  }
+}
+
+class LoadedSourceTreeWidget extends Widget{
+
+  constructor(optoins: LoadedSourceTreeWidget.IOptions){
+    super();
+  }
+  // this.addClass("jp-loadedSourceTreeWidget");
+}
+
+/**
+ * A namespace for LoadedSourceTreeWidget.
+ */
+ export namespace LoadedSourceTreeWidget {
+  /**
+   * Instantiation options for LoadedSourceTreeWidget.
+   */
+  export interface IOptions {
+    tree : string;
   }
 }
 
@@ -341,6 +363,10 @@ export class DebuggerHandler implements DebuggerHandler.IHandler {
         }
       });
       connection.kernel?.requestExecute({code,});
+      const tree = "tree";
+      const widget = new LoadedSourceTreeWidget({tree});
+      const lost_source_widget = new MainAreaWidget({ content: widget});
+      this._shell.add(lost_source_widget, 'down');
       await this._service.restoreState(true);
       await this._service.displayDefinedVariables();
     };
