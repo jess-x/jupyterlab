@@ -313,9 +313,52 @@ export class DebuggerHandler implements DebuggerHandler.IHandler {
       await this._service.stop();
     };
 
+    let code = `
+    from ipykernel.comm import Comm
+    import sys
+    path = set(sys.modules) & set(globals())
+    // modules = set(sys.modules)
+    // paths = list(sys.modules[name] for name in set(sys.modules) & set(globals()))
+    
+    comm = Comm(target_name="loaded source")
+    comm.send(data=path)
+    comm.close(data="closing comm")
+    `;
+
+    // const code2 = `
+    // from ipykernel.comm import Comm
+    // import sys
+    // path = set(sys.modules) & set(globals())
+    // comm = Comm(target_name="loaded source")
+    // comm.send(data=getmodel)
+    // comm.close(data="closing comm")
+    // `;
+
     const startDebugger = async (): Promise<void> => {
+      console.log("started debugger!!");
       this._service.session!.connection = connection;
       this._previousConnection = connection;
+      const kernel = connection.kernel!;
+      kernel.registerCommTarget('loaded source', (comm: Kernel.IComm, commMsg: KernelMessage.ICommOpenMsg) => {
+        console.log('---', commMsg);
+        if(commMsg.content.target_name !== 'loaded source'){
+          return ;
+        }
+        comm.onMsg = msg => {
+          console.log('---', msg.content.data);
+        };
+        comm.onClose = msg => {
+          console.log('---', msg.content.data);
+          // done.resolve(undefined);
+        }
+      });
+      // const code = `
+      //   from ipykernel.comm import Comm
+      //   import sys
+      //   // path = set(sys.modules) & set(globals())
+      //   print(sys.modules)`;
+      // //
+      connection.kernel?.requestExecute({code,});
       await this._service.restoreState(true);
       await this._service.displayDefinedVariables();
     };
