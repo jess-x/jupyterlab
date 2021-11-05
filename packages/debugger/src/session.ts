@@ -96,15 +96,15 @@ export class DebuggerSession implements IDebugger.ISession {
   /**
    * Whether the debug session is started
    */
-  set pausingOnExceptions(value : boolean) {
-      this._pausingOnExceptions = value;
+  set pausingOnExceptions(value: boolean) {
+    this._pausingOnExceptions = value;
   }
 
   /**
    * Exception paths defined by the debugger
    */
   get exceptionPaths(): string[] {
-      return this._exceptionPaths;
+    return this._exceptionPaths;
   }
 
   /**
@@ -153,7 +153,7 @@ export class DebuggerSession implements IDebugger.ISession {
     if (!reply.success) {
       throw new Error(`Could not start the debugger: ${reply.message}`);
     }
-    console.log("REPLY", reply);
+    console.log('REPLY', reply);
     this._isStarted = true;
     this._pausingOnExceptions = false;
     this._exceptionBreakpointFilters = reply.body?.exceptionBreakpointFilters;
@@ -176,7 +176,7 @@ export class DebuggerSession implements IDebugger.ISession {
    */
   async restoreState(): Promise<IDebugger.ISession.Response['debugInfo']> {
     const message = await this.sendRequest('debugInfo', {});
-    console.log("DEBUG INFO", message)
+    console.log('DEBUG INFO', message);
     this._isStarted = message.body.isStarted;
     this._exceptionPaths = message.body.exceptionPaths;
     return message;

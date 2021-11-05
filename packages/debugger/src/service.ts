@@ -102,7 +102,7 @@ export class DebuggerService implements IDebugger, IDisposable {
 
     this._session?.eventMessage.connect((_, event) => {
       if (event.event === 'stopped') {
-        console.log("EVENT", event)
+        console.log('EVENT', event);
         this._model.stoppedThreads.add(event.body.threadId);
         void this._getAllFrames();
       } else if (event.event === 'continued') {
@@ -519,9 +519,9 @@ export class DebuggerService implements IDebugger, IDisposable {
    *
    * @param enable - Wether to enbale or disable pausing on exceptions.
    */
-  async pauseOnExceptions(enable : boolean): Promise<void> {
+  async pauseOnExceptions(enable: boolean): Promise<void> {
     if (!this.session?.isStarted) {
-      return
+      return;
     }
 
     const exceptionPaths = this.session.exceptionPaths;
@@ -532,32 +532,32 @@ export class DebuggerService implements IDebugger, IDisposable {
     let options: DebugProtocol.SetExceptionBreakpointsArguments;
     if (enable) {
       options = {
-        filters: ["raised", "uncaught"],
+        filters: ['raised', 'uncaught'],
         exceptionOptions: [
-          { 
-            path: [{names: exceptionPaths}],
-            breakMode: "always"
+          {
+            path: [{ names: exceptionPaths }],
+            breakMode: 'always'
           },
-          { 
-            path: [{names: exceptionPaths}],
-            breakMode: "always"
+          {
+            path: [{ names: exceptionPaths }],
+            breakMode: 'always'
           }
         ]
-      }
+      };
     } else {
       options = {
-        filters: ["raised", "uncaught"],
+        filters: ['raised', 'uncaught'],
         exceptionOptions: [
-          { 
-            path: [{names: exceptionPaths}],
-            breakMode: "always"
+          {
+            path: [{ names: exceptionPaths }],
+            breakMode: 'always'
           },
-          { 
-            path: [{names: exceptionPaths}],
-            breakMode: "never"
+          {
+            path: [{ names: exceptionPaths }],
+            breakMode: 'never'
           }
         ]
-      }
+      };
     }
     await this.session.sendRequest('setExceptionBreakpoints', options);
   }
